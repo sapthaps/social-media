@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Count
 
 # Create your models here.
 class Posts(models.Model):
@@ -12,6 +13,11 @@ class Posts(models.Model):
     @property
     def posts_comments(self):
         return self.comments_set.all()
+
+    @property
+    def likes(self):
+        qs=self.like.all().count()
+        return qs
 
     def _str_(self):
         return self.title

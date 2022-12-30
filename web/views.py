@@ -30,7 +30,39 @@ class SignInView(FormView):
                 return render(request,self.template_name,{"form":form})
 
 
-
-class IndexView(TemplateView):
+class IndexView(CreateView,ListView):
     template_name="index.html"
-    
+    form_class=PostForm
+    success_url=reverse_lazy("index")
+    model=Posts
+    context_object_name="posts"
+
+    def form_valid(self, form):
+        form.instance.user=self.request.user
+        messages.success(self.request,"your question added successfully")
+        return super().form_valid(form)
+    def get_queryset(self):
+        return Posts.objects.all()
+
+def add_comment(request,*args,**kw):
+        id=kw.get("id")
+        pst=Posts.objects.get(id=id)
+        cmt=request.POST.get("comment")
+
+        Comments.objects.create(post=pst,comment=cmt,user=request.user)
+        messages.success(request,"your answer posted successfully")
+        return redirect("index")
+
+
+def like_post_view(request,*args,**kwargs):
+    id=kwargs.get("id")
+    pst=Posts.objects.get(id=id)
+    if pst.like.contains(request.user):
+        pst.like.remove(request.user)
+    else:
+        pst.like.add(request.user)
+    return redirect("index")
+
+def signout_view(request,*args,**kw):
+    logout(request)
+    return redirect("signin")
