@@ -2,49 +2,238 @@
 {%block body_block%}
 
 
-<div class="row">
-    <div class="col-3"></div>
-    <div class="col-5">
-        <div class="card mt-3">
-            <div class="card-body">
-                <form action="" method="post" enctype="multipart/form-data">
-                    {%csrf_token%}
-                    {{form.as_p}}
-                    <input type="submit" class="btn btn-outline-primary form-control" value="submit">
-                </form>
-            </div>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
 
-        {%for p in posts%}
-        <div class="card mt-3">
-            <div class="card-body">
-                <p><small>@{{p.user}}</small></p>
-                <small>{{p.created_date}}</small>
-                <img src="{{p.image.url}}" alt="" width="100%">
-                <p>{{p.title}}</p>
-                <a href="{% url 'add-like' p.id %}" class="btn btn-outline-primary">{{p.likes}} Like</a>
-                <button class="btn btn-outline-primary">comment</button>
-                <hr>
-                <form action="{%url 'add-comment' p.id%}" method="post">
-                    {%csrf_token%}
-                    <input type="text" class="form-control" name="comment" required >
-                    <button type="submit" class="btn btn-outline-primary btn-sm mt-1">Add Comment</button>
-                </form>
-                <div>
-                    {%for comment in p.posts_comments%}
-                    <div class="card-body bg-light mt-2">
-                        <p style="display: inline;"><small>@{{comment.user}}</small></p>
-                        <small>{{comment.created_date}}</small>
-                        <p>{{comment.comment}}</p>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+        integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="row">
+        <div class="col-4">
+            <div class="following">
+                <h5 class="m-3">I'm Following <i class="fa-solid fa-users"></i></h5>
+                <div class="card parent border-0 shadow-sm rounded" style=" width: 90%;">
+                    {% for f in followings %}
+                    <div class="card child rounded-5 border-0 shadow-sm" style="width: 100%;">
+                        <div class="card-body text-center border-0 shadow-sm">
+                            <img src="/images/download.png" class="rounded-circle" width="100%" alt="">
+                            <small style="font-size: 0.8em;">{{f.user}}</small>
+                        </div>
                     </div>
-                    {%endfor%}
+                    {% endfor %}
+                </div>
+
+
+
+
+            </div>
+            <h5 class="mt-5">Trending Posts</h5>
+
+            <div class="card p-3 mt-3 border-0 shadow-sm rounded" style="  width: 90%;">
+                <div class="card-body">
+                    <div class="row main ">
+                        {% for t in posts %}
+                        <div class="card mb-3 border-0 child" style="max-width: 100%;">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="{{t.image.url}}" width="100%" style="height: 100px; !important" class="img-fluid rounded-start" alt="...">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h6 style="margin: 0;margin-top: -20px;" class="card-title">{{t.title}}</h6>
+                                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
+
+
+
+
+
+
         </div>
-        {%endfor%}
+        <div class="col-5">
+
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">NEW POST</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{form.as_p}}
+                                <input class="btn btn-outline-info form-control btn-sm" type="submit" name="" id=""
+                                    value="Add">
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <!-- <div class="card mt-3">
+                <div class="card-body">
+                    <form action="" method="post" enctype="multipart/form-data">
+                        {%csrf_token%}
+                        {{form.as_p}}
+                        <input type="submit" class="btn btn-outline-dark form-control" value="submit">
+                    </form>
+                </div>
+            </div> -->
+
+            {%for p in posts%}
+            <div class="card mt-3 border-0 shadow rounded" >
+                <div class="card-body">
+                    <p class="text-right fw-bold" style="display: inline;">@{{p.user}}</p>
+                    <small>{{p.created_date}}</small>
+                    <img src="{{p.image.url}}" class="mt-2" alt="" width="100%" height="500">
+                    <p>{{p.title}}</p>
+                    
+                    <a href="{% url 'add-like' p.id %}" class="btn btn-outline-dark"><i
+                            class="fa-solid fa-heart"></i>{{p.likes}}</a>
+                            
+                    <!-- <button class="btn btn-outline-dark"><i class="fa-regular fa-comments"></i></button> -->
+                    <button type="button" class="btn btn-outline-dark  collapsed"
+                        data-bs-toggle="collapse" data-bs-target="#flush-collapse{{p.id}}" aria-expanded="false"
+                        aria-controls="flush-collapseOne"><i class="fa-regular fa-comments"></i></button>
+
+                    
+                        
+                    <hr>
+                    <form action="{%url 'add-comment' p.id%}" method="post">
+                        {%csrf_token%}
+                        <input type="text" class="form-control" name="comment" required placeholder="Add comment">
+                        <button type="submit" class="btn btn-outline-dark btn-sm mt-1">Comments</button>
+                        
+                    </form>
+
+                     <!-- comment section -->
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+                    <div id="flush-collapse{{p.id}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+                        data-bs-parent="#accordionFlushExample" style="">
+
+                        <!-- <form action="{% url 'add-comment' p.id %}" method="post">
+                            {% csrf_token %}
+                            <textarea name="comment" class="form-control" id="id_comment" cols="74" rows="5"></textarea>
+                            <input type="submit" value="submit" class="btn btn-outline-primary">
+                        </form> -->
+
+                        {% for comment in p.posts_comments %}
+                        <div class="accordion-body bg-light m-1 mt-2">
+                            <div class="">
+                                <p><small>@{{comment.user}}</small></p>
+                                <p>{{comment.comment}}</p>
+                                <a href="{% url 'comment-delete' comment.id %}"><i class="fa-sharp fa-solid fa-trash" style="color: black;"></i></a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <!-- end of comment section -->
+
+
+
+            
+
+                    
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+        <div class="col-3">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+                integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+                crossorigin="anonymous" />
+
+            <style>
+                .parent {
+                    display: grid;
+                    grid-gap: 5px;
+                    grid-column-gap: 0px;
+                    grid-template-columns: 1fr 1fr 1fr 1fr;
+                    grid-row-gap: 5px;
+                    grid-column-gap: 5px;
+                    padding: 1em;
+                }
+            </style>
+
+
+            <h4 class="m-3">Activity Feed</h2>
+
+                <div class="card border-0 shadow-sm rounded">
+                    <div class="card-body">
+                        <div class="input-group" style="width: 100%; height: 3em;">
+
+                            <span class="input-group-text border-0 " data-bs-toggle="modal"
+                                data-bs-target="#exampleModal" id="basic-addon1">@</span>
+                            <input type="text" class="form-control border-0"
+                                placeholder="Share whats on your mind, {{request.user}}. ." aria-label="Username"
+                                aria-describedby="basic-addon1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        </div>
+
+                    </div>
+                </div>
+
+                
+                <h4 class="mt-5">My Profile</h2>
+                <div class="card mt-5 ms-5 border-0 shadow rounded" style="width: 70%;">
+                    
+                    <img src="{{request.user.profile.proimage.url}}" width="70%" height="50%" class="card-img-top p-2 " alt="...">
+                    <div class="card-body text-center">
+                        <p class="card-text" style="margin: 0;"><strong>@{{request.user}}</strong></p>
+                        <span><small class="">{{request.user.first_name}} </small></span>
+                        <span><small class="">{{request.user.last_name}} </small></span>
+                        <br>
+                        <a href="{% url 'profile' %}" class="btn btn-outline-dark btn-sm mt-2"><small>View
+                                Profile</small></a>
+                    </div>
+                </div>
+
+
+
+
+
+
+        </div>
     </div>
-    <div class="col-4"></div>
-</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+    crossorigin="anonymous"></script>
+
+</html>
+
+
 
 
 
